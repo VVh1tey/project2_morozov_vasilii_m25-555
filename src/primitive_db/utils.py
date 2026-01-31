@@ -1,10 +1,10 @@
 import json
 import os
 
-from .constants import DATA_DIR
+from .constants import DATA_DIR, DB_META_PATH
 
 
-def load_metadata(filepath):
+def load_metadata(filepath=DB_META_PATH):
     """Загружает метаданные из JSON-файла."""
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -12,7 +12,7 @@ def load_metadata(filepath):
     except (FileNotFoundError, json.JSONDecodeError):
         return {}
 
-def save_metadata(filepath, data):
+def save_metadata(data, filepath=DB_META_PATH):
     """Сохраняет метаданные в JSON-файл."""
     with open(filepath, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4, ensure_ascii=False)

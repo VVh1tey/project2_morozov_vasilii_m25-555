@@ -1,5 +1,4 @@
 import shlex
-
 import prompt
 
 from .constants import ERROR_MESSAGES, HELP_MESSAGE
