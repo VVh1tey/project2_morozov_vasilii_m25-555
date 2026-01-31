@@ -25,3 +25,21 @@ def ensure_data_dir():
 def get_table_file_path(table_name):
     """Возвращает путь к файлу таблицы."""
     return os.path.join(DATA_DIR, f"{table_name}.json")
+
+
+def load_table_data(table_name):
+    """Загружает данные таблицы из JSON-файла."""
+    filepath = get_table_file_path(table_name)
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+
+def save_table_data(table_name, data):
+    """Сохраняет данные таблицы в JSON-файл."""
+    filepath = get_table_file_path(table_name)
+    ensure_data_dir()
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
