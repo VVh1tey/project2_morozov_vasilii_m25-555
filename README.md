@@ -26,3 +26,4 @@ https://asciinema.org/a/wWhPxDcvL2T7RzKS
 - Демо из третьего задания (CRUD-операции):
 https://asciinema.org/a/eMLUIJa0bH98PrUI
 - Финальное демо:
+https://asciinema.org/a/b4tor812vY1cbUah
