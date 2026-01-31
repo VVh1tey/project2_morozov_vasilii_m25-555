@@ -23,3 +23,4 @@
 - Демо из второго задания (базовые команды):
 https://asciinema.org/a/wWhPxDcvL2T7RzKS
 - Демо из третьего задания (CRUD-операции):
+https://asciinema.org/a/eMLUIJa0bH98PrUI
