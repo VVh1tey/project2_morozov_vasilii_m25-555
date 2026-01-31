@@ -1,0 +1,10 @@
+{
+    "table": [
+        "ID:int",
+        "col1:int"
+    ],
+    "table1": [
+        "ID:int",
+        "col1:int"
+    ]
+}

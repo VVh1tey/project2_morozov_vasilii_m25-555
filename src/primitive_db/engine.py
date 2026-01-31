@@ -15,15 +15,10 @@ def run():
     while True:
         command = prompt.string("Введите команду: ").strip().lower()
         
-        if command == "exit":
-            print("Выход из программы.")
         try:
-            user_input = input("Введите команду: ").strip()
-            if not user_input:
-                continue
-                
+
             # Разбиваем команду на части с учетом кавычек
-            parts = shlex.split(user_input)
+            parts = shlex.split(command)
             command = parts[0].lower()
             args = parts[1:]
             
@@ -44,7 +39,8 @@ def run():
                 
                 table_name = args[0]
                 columns = args[1:]
-                
+                # print(f"table_name= {table_name}")
+                # print(f"columns= {columns}")
                 success, message = create_table(metadata, table_name, columns)
                 print(message)
                 if success:
