@@ -1,7 +1,9 @@
 
 from .constants import AUTO_ID_COLUMN, ERROR_MESSAGES, SUPPORTED_TYPES
+from .decorators import confirm_action, handle_db_errors, log_time
 
 
+@handle_db_errors
 def create_table(metadata, table_name, columns):
     """Создает новую таблицу."""
     if table_name in metadata:
@@ -23,11 +25,15 @@ def create_table(metadata, table_name, columns):
     metadata[table_name] = final_columns
     
     columns_str = ", ".join(final_columns)
-    success_message = f'Таблица "{table_name}" успешно создана со столбцами: {columns_str}'
+    success_message = (
+        f'Таблица "{table_name}" успешно создана со столбцами: {columns_str}'
+    )
     
     return True, success_message
 
 
+@handle_db_errors
+@confirm_action("удаление таблицы")
 def drop_table(metadata, table_name):
     """Удаляет таблицу."""
     if table_name not in metadata:
@@ -84,6 +90,8 @@ def get_column_type(metadata, table_name, column_name):
     return None
 
 
+@handle_db_errors
+@log_time
 def insert(metadata, table_data, table_name, values):
     """Вставляет новую запись в таблицу."""
     if table_name not in metadata:
@@ -117,6 +125,8 @@ def insert(metadata, table_data, table_name, values):
     )
 
 
+@handle_db_errors
+@log_time
 def select(table_data, metadata, table_name, where_clause=None):
     """Выбирает записи из таблицы."""
     if not where_clause:
@@ -138,6 +148,7 @@ def select(table_data, metadata, table_name, where_clause=None):
     return results
 
 
+@handle_db_errors
 def update(table_data, metadata, table_name, set_clause, where_clause):
     """Обновляет записи в таблице."""
     updated_ids = []
@@ -156,7 +167,9 @@ def update(table_data, metadata, table_name, set_clause, where_clause):
     if set_value is None:
         return (
             False,
-            ERROR_MESSAGES["invalid_value_for_type"].format(set_value_str, set_col_type),
+            ERROR_MESSAGES["invalid_value_for_type"].format(
+                set_value_str, set_col_type
+            ),
             table_data,
         )
 
@@ -176,6 +189,8 @@ def update(table_data, metadata, table_name, set_clause, where_clause):
     return False, "Не найдено записей для обновления.", table_data
 
 
+@handle_db_errors
+@confirm_action("удаление записей")
 def delete(table_data, metadata, table_name, where_clause):
     """Удаляет записи из таблицы."""
     where_key, where_value_str = list(where_clause.items())[0]

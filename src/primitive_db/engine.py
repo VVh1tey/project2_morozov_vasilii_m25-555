@@ -1,7 +1,7 @@
-import shlex
 import re
-import prompt
+import shlex
 
+import prompt
 from prettytable import PrettyTable
 
 from .constants import ERROR_MESSAGES, HELP_MESSAGE
@@ -14,6 +14,7 @@ from .core import (
     select,
     update,
 )
+from .decorators import create_cacher
 from .utils import (
     ensure_data_dir,
     load_metadata,
@@ -62,6 +63,8 @@ def run():
     print("***Примитивная база данных***")
     print(HELP_MESSAGE)
 
+    select_cacher = create_cacher()
+
     while True:
         original_command_str = prompt.string("Введите команду: ").strip()
         if not original_command_str:
@@ -84,7 +87,8 @@ def run():
             elif command == "create_table":
                 if len(args) < 2:
                     print(
-                        "Ошибка: Недостаточно аргументов. Используйте: create_table <имя> <столбец1:тип> ..."
+                        "Ошибка: Недостаточно аргументов. "
+                        "Используйте: create_table <имя> <столбец1:тип> ..."
                     )
                     continue
                 table_name, columns = args[0], args[1:]
@@ -96,7 +100,8 @@ def run():
             elif command == "drop_table":
                 if len(args) != 1:
                     print(
-                        "Ошибка: Неверное количество аргументов. Используйте: drop_table <имя_таблицы>"
+                        "Ошибка: Неверное количество аргументов. "
+                        "Используйте: drop_table <имя_таблицы>"
                     )
                     continue
                 table_name = args[0]
@@ -111,18 +116,20 @@ def run():
             elif command == "insert":
                 try:
                     into_index = parts.index("into")
-                    values_index = parts.index("values")
+                    parts.index("values") # Проверяем, что values есть в команде
                     table_name = parts[into_index + 1]
                 except (ValueError, IndexError):
                     print(
-                        "Ошибка: Неверный синтаксис. Используйте: insert into <имя_таблицы> values (...)"
+                        "Ошибка: Неверный синтаксис. "
+                        "Используйте: insert into <имя_таблицы> values (...)"
                     )
                     continue
 
                 values = parse_values(original_command_str)
                 if values is None:
                     print(
-                        "Ошибка: Неверный синтаксис для values. Убедитесь, что значения в скобках ()."
+                        "Ошибка: Неверный синтаксис для values. "
+                        "Убедитесь, что значения в скобках ()."
                     )
                     continue
 
@@ -139,12 +146,24 @@ def run():
                     from_index = parts.index("from")
                     table_name = parts[from_index + 1]
                 except (ValueError, IndexError):
-                    print("Ошибка: Неверный синтаксис. Используйте: select from <имя_таблицы> ...")
+                    print(
+                        "Ошибка: Неверный синтаксис. "
+                        "Используйте: select from <имя_таблицы> ..."
+                    )
                     continue
 
                 where_clause = parse_clause(parts, "where")
-                table_data = load_table_data(table_name)
-                results = select(table_data, metadata, table_name, where_clause)
+
+                cache_key = f"{table_name}-{where_clause}"
+
+                def db_select():
+                    table_data = load_table_data(table_name)
+                    return select(table_data, metadata, table_name, where_clause)
+
+                results = select_cacher(cache_key, db_select)
+
+                if results is None:
+                    continue
 
                 if not results:
                     print("Нет записей, удовлетворяющих условию.")
@@ -169,7 +188,8 @@ def run():
                         raise ValueError
                 except (ValueError, IndexError):
                     print(
-                        "Ошибка: Неверный синтаксис. Используйте: update <имя_таблицы> set ... where ..."
+                        "Ошибка: Неверный синтаксис. "
+                        "Используйте: update <имя_таблицы> set ... where ..."
                     )
                     continue
 
@@ -196,7 +216,8 @@ def run():
                         raise ValueError
                 except (ValueError, IndexError):
                     print(
-                        "Ошибка: Неверный синтаксис. Используйте: delete from <имя_таблицы> where ..."
+                        "Ошибка: Неверный синтаксис. "
+                        "Используйте: delete from <имя_таблицы> where ..."
                     )
                     continue
 
