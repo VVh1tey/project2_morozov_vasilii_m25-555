@@ -1,5 +1,5 @@
 [project]
-name = "database_project"
+name = "primitive_db"
 version = "0.1.0"
 description = "Файловая база данных"
 authors = [
@@ -7,28 +7,32 @@ authors = [
 ]
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = [
-    "prompt>=0.4.1",
-    "prettytable>=3.9.0"
+packages = [
+    { include = "src" },
 ]
 
-[project.scripts]
-project = "database_project.main:main"
+[tool.poetry.dependencies]
+python = "^3.12"
+prompt-toolkit = "^3.0.0"
+prettytable = "^3.0.0"
+prompt = "^0.4.1"
 
-[build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.14.6"
+asciinema = "^2.4.0"
+
+[tool.poetry.scripts]
+project = "src.primitive_db.main:main"
 
 [tool.ruff]
 line-length = 88
 target-version = "py312"
-exclude = ["venv", ".venv", "dist", "__pycache__", "data"]
+exclude = ["venv", ".venv", "dist", "__pycache__"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
 ignore = []
 
-[dependency-groups]
-dev = [
-    "ruff>=0.14.5"
-]
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
