@@ -63,7 +63,7 @@ def run():
     print("***Примитивная база данных***")
     print(HELP_MESSAGE)
 
-    select_cacher = create_cacher()
+    select_cacher, clear_select_cache = create_cacher()
 
     while True:
         original_command_str = prompt.string("Введите команду: ").strip()
@@ -96,6 +96,7 @@ def run():
                 print(message)
                 if success:
                     save_metadata(metadata)
+                    clear_select_cache()
 
             elif command == "drop_table":
                 if len(args) != 1:
@@ -105,10 +106,13 @@ def run():
                     )
                     continue
                 table_name = args[0]
-                success, message = drop_table(metadata, table_name)
-                print(message)
-                if success:
-                    save_metadata(metadata)
+                result = drop_table(metadata, table_name)
+                if result:
+                    success, message = result
+                    print(message)
+                    if success:
+                        save_metadata(metadata)
+                        clear_select_cache()
 
             elif command == "list_tables":
                 print(list_tables(metadata))
@@ -140,6 +144,7 @@ def run():
                 print(message)
                 if success:
                     save_table_data(table_name, new_data)
+                    clear_select_cache()
 
             elif command == "select":
                 try:
@@ -207,6 +212,7 @@ def run():
                 print(message)
                 if success:
                     save_table_data(table_name, new_data)
+                    clear_select_cache()
 
             elif command == "delete":
                 try:
@@ -227,12 +233,15 @@ def run():
                     continue
 
                 table_data = load_table_data(table_name)
-                success, message, new_data = delete(
+                result = delete(
                     table_data, metadata, table_name, where_clause
                 )
-                print(message)
-                if success:
-                    save_table_data(table_name, new_data)
+                if result:
+                    success, message, new_data = result
+                    print(message)
+                    if success:
+                        save_table_data(table_name, new_data)
+                        clear_select_cache()
 
             elif command == "info":
                 if len(args) != 1:

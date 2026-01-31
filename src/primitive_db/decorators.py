@@ -73,4 +73,9 @@ def create_cacher():
         cache[key] = result
         return result
 
-    return cache_result
+    def clear_cache():
+        """Очищает кэш."""
+        cache.clear()
+        print("(кэш очищен)")
+
+    return cache_result, clear_cache
