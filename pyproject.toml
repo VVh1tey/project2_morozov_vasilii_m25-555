@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-project = "project2_morozov_vasilii_m25_555.main:main"
+project = "database_project.main:main"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
